@@ -1,9 +1,31 @@
-export async function connectWallet() {
-  console.log('oki');
+// TODO: decorator if window.ethereum...
+// TODO: error management
+
+export async function connectWallet(): Promise<[string] | boolean> {
   if ('ethereum' in window) {
-    const wallet = await window.ethereum.send('eth_requestAccounts');
-    const w3 = window.web3 = new Web3(window.ethereum); // useful ?
-    return wallet;
+    try {
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts'
+      });
+      return accounts;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+export async function getConnectedWallet() {
+  if ('ethereum' in window) {
+    try {
+      const account = await window.ethereum.request({
+        method: 'eth_accounts'
+      });
+      return account;
+    } catch (error) {
+      return false;
+    }
   }
 
   return false;

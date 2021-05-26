@@ -11,12 +11,22 @@
 
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
-import { connectWallet } from './eth';
+import { onMount } from 'svelte';
+import { connectWallet, getConnectedWallet } from './eth';
 
 enum ConnectionStatus {
   CONNECTED = 'connected',
   DISCONNECTED = 'disconnected',
 }
+
+onMount(async () => {
+  const accounts = await getConnectedWallet();
+  if (accounts) {
+    status = ConnectionStatus.CONNECTED;
+    connectedAdress = accounts[0];
+  }
+});
+
 // TODO: adress type ?
 let connectedAdress: string = '';
 let status: ConnectionStatus = ConnectionStatus.DISCONNECTED;
@@ -24,12 +34,11 @@ let truncatedAdress: string;
 let connectBtnLabel: string;
 
 async function onConnect() {
-  console.log('on connect');
-  const connection = await connectWallet();
-  console.log(connection);
-  if (connection) {
+  const accounts = await connectWallet();
+  console.log(accounts);
+  if (accounts) {
     status = ConnectionStatus.CONNECTED;
-    connectedAdress = connection.result[0];
+    connectedAdress = accounts[0];
   }
 }
 
