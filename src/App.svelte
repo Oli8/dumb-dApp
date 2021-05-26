@@ -19,6 +19,15 @@ enum ConnectionStatus {
 }
 
 onMount(async () => {
+  window.ethereum.on('accountsChanged', ([account]) => {
+    if (!account) {
+      connectedAdress = null;
+      status = ConnectionStatus.DISCONNECTED;
+    } else {
+      connect(account);
+    }
+  });
+
   const account = await getConnectedWallet();
   if (account) {
     status = ConnectionStatus.CONNECTED;
