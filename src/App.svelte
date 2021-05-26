@@ -1,13 +1,11 @@
-<div>
-  <Tailwind />
-  <nav class="border-b-2 border-blue-400 bg-blue p-5">
-    <h1 class="inline">Dumb dApp</h1>
-    <button on:click={onConnect}
-            class="float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1 cursor-pointer">
-      {connectBtnLabel}
-    </button>
-  </nav>
-</div>
+<Tailwind />
+<nav class="border-b-2 border-blue-400 bg-blue p-5">
+  <h1 class="inline">Dumb dApp</h1>
+  <button on:click={onConnect}
+          class="float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1 cursor-pointer">
+    {connectBtnLabel}
+  </button>
+</nav>
 
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
