@@ -1,13 +1,13 @@
 // TODO: decorator if window.ethereum...
 // TODO: error management
 
-export async function connectWallet(): Promise<[string] | boolean> {
+export async function connectWallet() {
   if ('ethereum' in window) {
     try {
       const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts'
       });
-      return accounts;
+      return accounts[0];
     } catch (error) {
       return false;
     }
@@ -19,10 +19,10 @@ export async function connectWallet(): Promise<[string] | boolean> {
 export async function getConnectedWallet() {
   if ('ethereum' in window) {
     try {
-      const account = await window.ethereum.request({
+      const accounts = await window.ethereum.request({
         method: 'eth_accounts'
       });
-      return account;
+      return accounts[0];
     } catch (error) {
       return false;
     }

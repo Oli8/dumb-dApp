@@ -10,6 +10,7 @@
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
 import { onMount } from 'svelte';
+import type adress from './types/adress';
 import { connectWallet, getConnectedWallet } from './eth';
 
 enum ConnectionStatus {
@@ -18,30 +19,28 @@ enum ConnectionStatus {
 }
 
 onMount(async () => {
-  const accounts = await getConnectedWallet();
-  if (accounts) {
+  const account = await getConnectedWallet();
+  if (account) {
     status = ConnectionStatus.CONNECTED;
-    connectedAdress = accounts[0];
+    connectedAdress = account;
   }
 });
 
-// TODO: adress type ?
-let connectedAdress: string = '';
+let connectedAdress: adress;
 let status: ConnectionStatus = ConnectionStatus.DISCONNECTED;
 let truncatedAdress: string;
 let connectBtnLabel: string;
 
 async function onConnect() {
-  const accounts = await connectWallet();
-  console.log(accounts);
-  if (accounts) {
+  const account = await connectWallet();
+  if (account) {
     status = ConnectionStatus.CONNECTED;
-    connectedAdress = accounts[0];
+    connectedAdress = account;
   }
 }
 
-$: { truncatedAdress =
-  `${connectedAdress.substring(0, 4)}...${connectedAdress.substring(connectedAdress.length-4)}`;
+$: if (connectedAdress) {
+  truncatedAdress = `${connectedAdress.substring(0, 4)}...${connectedAdress.substring(connectedAdress.length-4)}`;
 }
 $: connectBtnLabel = connectedAdress ? truncatedAdress : 'Connect';
 </script>
