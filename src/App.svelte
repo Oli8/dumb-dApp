@@ -30,8 +30,7 @@ onMount(async () => {
 
   const account = await getConnectedWallet();
   if (account) {
-    status = ConnectionStatus.CONNECTED;
-    connectedAdress = account;
+    connect(account);
   }
 });
 
@@ -43,9 +42,13 @@ let connectBtnLabel: string;
 async function onConnect() {
   const account = await connectWallet();
   if (account) {
-    status = ConnectionStatus.CONNECTED;
-    connectedAdress = account;
+    connect(account);
   }
+}
+
+function connect(account: adress): void {
+  status = ConnectionStatus.CONNECTED;
+  connectedAdress = account;
 }
 
 $: if (connectedAdress) {
