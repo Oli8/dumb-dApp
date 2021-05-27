@@ -2,8 +2,12 @@
 <nav class="border-b-2 border-blue-400 bg-blue p-5">
   <h1 class="inline">Dumb dApp</h1>
   {#if connectedAdress}
-    <div class="float-right mr-4 border-dotted border-2 border-blue-400     rounded p-1 relative bottom-1">
-      {readAbleEthBalance} ETH
+    <div class="float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1">
+      {readAbleEthBalance}
+      <img src="eth_logo.png"
+           alt="ethers"
+           class="float-right relative top-1 ml-1"
+           width="10" />
     </div>
   {/if}
   <button on:click={onConnect}
@@ -45,7 +49,7 @@ let status: ConnectionStatus = ConnectionStatus.DISCONNECTED;
 let truncatedAdress: string;
 let connectBtnLabel: string;
 let ethBalance: number;
-let readAbleEthBalance: string;
+let readAbleEthBalance: string = '0';
 
 async function onConnect() {
   const account = await connectWallet();
