@@ -21,7 +21,10 @@ import Tailwind from './Tailwind.svelte';
 import { onMount } from 'svelte';
 import type adress from './types/adress';
 import { connectWallet, getConnectedWallet,
-         getEthBalance } from './eth';
+         getEthBalance, getChain } from './eth';
+
+const ropstenChainId: string = '0x3';
+const wrongChainMessage: string = 'This network is not supported. Please switch to Ropsten network';
 
 onMount(async () => {
   window.ethereum.on('accountsChanged', ([account]) => {
@@ -29,6 +32,14 @@ onMount(async () => {
       connectedAdress = null;
     } else {
       connect(account);
+    }
+  });
+
+  window.ethereum.on('chainChanged', async (chainId) => {
+    // TODO: check if we can ask for a network change
+    if (!await checkChain()) {
+      alert(wrongChainMessage);
+      logOut();
     }
   });
 
@@ -42,17 +53,31 @@ let connectedAdress: adress;
 let truncatedAdress: string;
 let connectBtnLabel: string;
 let ethBalance: number;
-let readAbleEthBalance: string = '0';
+let readAbleEthBalance: string;
+
+async function checkChain(): Promise<boolean> {
+  const chainId = await getChain();
+  return chainId === ropstenChainId;
+}
 
 async function onConnect() {
+  if (!await checkChain())
+    return alert(wrongChainMessage);
+
   const account = await connectWallet();
   if (account) {
     connect(account);
   }
 }
 
-function connect(account: adress): void {
+async function connect(account: adress) {
+  if (!await checkChain())
+    return alert(wrongChainMessage);
   connectedAdress = account;
+}
+
+function logOut() {
+  connectedAdress = null;
 }
 
 async function getConnectedAdressEthBalance() {

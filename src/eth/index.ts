@@ -48,3 +48,19 @@ export async function getEthBalance(account: adress) {
 
   return false;
 }
+
+export async function getChain() {
+  if ('ethereum' in window) {
+    try {
+      const chainId = await window.ethereum.request({
+        method: 'eth_chainId',
+      });
+
+      return chainId;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  return false;
+}
