@@ -5,13 +5,17 @@
           class="float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1 cursor-pointer">
     {connectBtnLabel}
   </button>
+  {#if connectedAdress}
+    {ethBalance}
+  {/if}
 </nav>
 
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
 import { onMount } from 'svelte';
 import type adress from './types/adress';
-import { connectWallet, getConnectedWallet } from './eth';
+import { connectWallet, getConnectedWallet,
+         getEthBalance } from './eth';
 
 enum ConnectionStatus {
   CONNECTED = 'connected',
@@ -38,6 +42,7 @@ let connectedAdress: adress;
 let status: ConnectionStatus = ConnectionStatus.DISCONNECTED;
 let truncatedAdress: string;
 let connectBtnLabel: string;
+let ethBalance: number;
 
 async function onConnect() {
   const account = await connectWallet();
@@ -51,8 +56,13 @@ function connect(account: adress): void {
   connectedAdress = account;
 }
 
+async function getConnectedAdressEthBalance() {
+  ethBalance = await getEthBalance(connectedAdress);
+}
+
 $: if (connectedAdress) {
   truncatedAdress = `${connectedAdress.substring(0, 4)}...${connectedAdress.substring(connectedAdress.length-4)}`;
 }
 $: connectBtnLabel = connectedAdress ? truncatedAdress : 'Connect';
+$: if (connectedAdress) { getConnectedAdressEthBalance(); }
 </script>
