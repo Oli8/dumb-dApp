@@ -23,16 +23,10 @@ import type adress from './types/adress';
 import { connectWallet, getConnectedWallet,
          getEthBalance } from './eth';
 
-enum ConnectionStatus {
-  CONNECTED = 'connected',
-  DISCONNECTED = 'disconnected',
-}
-
 onMount(async () => {
   window.ethereum.on('accountsChanged', ([account]) => {
     if (!account) {
       connectedAdress = null;
-      status = ConnectionStatus.DISCONNECTED;
     } else {
       connect(account);
     }
@@ -45,7 +39,6 @@ onMount(async () => {
 });
 
 let connectedAdress: adress;
-let status: ConnectionStatus = ConnectionStatus.DISCONNECTED;
 let truncatedAdress: string;
 let connectBtnLabel: string;
 let ethBalance: number;
@@ -59,7 +52,6 @@ async function onConnect() {
 }
 
 function connect(account: adress): void {
-  status = ConnectionStatus.CONNECTED;
   connectedAdress = account;
 }
 
