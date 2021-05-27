@@ -1,13 +1,15 @@
 <Tailwind />
 <nav class="border-b-2 border-blue-400 bg-blue p-5">
   <h1 class="inline">Dumb dApp</h1>
+  {#if connectedAdress}
+    <div class="float-right mr-4 border-dotted border-2 border-blue-400     rounded p-1 relative bottom-1">
+      {readAbleEthBalance} ETH
+    </div>
+  {/if}
   <button on:click={onConnect}
           class="float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1 cursor-pointer">
     {connectBtnLabel}
   </button>
-  {#if connectedAdress}
-    {ethBalance}
-  {/if}
 </nav>
 
 <script lang="ts">
@@ -43,6 +45,7 @@ let status: ConnectionStatus = ConnectionStatus.DISCONNECTED;
 let truncatedAdress: string;
 let connectBtnLabel: string;
 let ethBalance: number;
+let readAbleEthBalance: string;
 
 async function onConnect() {
   const account = await connectWallet();
@@ -58,6 +61,10 @@ function connect(account: adress): void {
 
 async function getConnectedAdressEthBalance() {
   ethBalance = await getEthBalance(connectedAdress);
+  readAbleEthBalance = Number(ethBalance).toLocaleString('fullwide', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 5,
+  });
 }
 
 $: if (connectedAdress) {
