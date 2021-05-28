@@ -6,10 +6,10 @@ import type adress from '../types/adress';
 export async function connectWallet() {
   if ('ethereum' in window) {
     try {
-      const accounts = await window.ethereum.request({
+      const [account] = await window.ethereum.request({
         method: 'eth_requestAccounts'
       });
-      return accounts[0];
+      return account;
     } catch (error) {
       return false;
     }
