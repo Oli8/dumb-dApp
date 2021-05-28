@@ -36,7 +36,7 @@ import { utils } from 'ethers';
 import { onMount } from 'svelte';
 import type adress from './types/adress';
 import { connectWallet, getConnectedWallet,
-         getEthBalance, getChain } from './eth';
+         getEthBalance, getChain, sendTransaction } from './eth';
 
 const ropstenChainId: string = '0x3';
 const wrongChainMessage: string = 'This network is not supported. Please switch to Ropsten network';
@@ -69,6 +69,8 @@ let truncatedAdress: string;
 let connectBtnLabel: string;
 let ethBalance: number;
 let readAbleEthBalance: string;
+let recipient: adress;
+let amount: number;
 
 async function checkChain(): Promise<boolean> {
   const chainId = await getChain();
@@ -93,6 +95,17 @@ async function connect(account: adress) {
 
 function logOut() {
   connectedAdress = null;
+}
+
+async function send() {
+  console.log('send eths!!', amount, recipient);
+  const tx = await sendTransaction({
+    from: connectedAdress,
+    to: recipient,
+    amount,
+  });
+  console.log(tx);
+  // TODO: display etherscan tx
 }
 
 async function getConnectedAdressEthBalance() {
