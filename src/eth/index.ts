@@ -70,18 +70,18 @@ export async function getChain() {
 export async function sendTransaction({from, to, amount}: {
   from: adress,
   to: adress,
-  amount: number | string
+  amount: number
 }) {
   if ('ethereum' in window) {
     try {
-      amount = utils.parseEther(String(amount))
-                    .toHexString()
+      const weiAmount = utils.parseEther(String(amount))
+                             .toHexString()
       const tx = await window.ethereum.request({
         method: 'eth_sendTransaction',
         params: [{
           from,
           to,
-          value: amount,
+          value: weiAmount,
         }]
       });
 
