@@ -1,5 +1,5 @@
 <Tailwind />
-<nav class="border-b-2 border-blue-400 bg-blue p-5">
+<nav class="border-b-2 border-blue-400 p-5">
   <h1 class="inline">Dumb dApp</h1>
   {#if connectedAdress}
     <div class="float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1">
