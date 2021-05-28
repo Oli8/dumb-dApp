@@ -20,8 +20,12 @@
   <main class="border-2 border-blue-400 mt-20 w-4/6 mx-auto p-5">
     › Send Ethers
     <form>
-      <input class="border block w-full my-3" type="text" maxlength="42"
+      <input class="border block w-full my-3" class:border-red-600={validRecipient === false}
+            type="text" maxlength="42"
              bind:value={recipient} placeholder="Recipient adress"/>
+      {#if validRecipient === false}
+        <span class="text-red-600">✗ Not a valid ethereum adress</span>
+      {/if}
       <input class="border block w-full my-3" type="number"
              bind:value={amount} placeholder="Amount"/>
       <input class="cursor-pointer w-full block uppercase text-lg p-3 rounded"
@@ -70,6 +74,8 @@ let connectBtnLabel: string;
 let ethBalance: number;
 let readAbleEthBalance: string;
 let recipient: adress;
+// or init to true ?
+let validRecipient: boolean;
 let amount: number;
 
 async function checkChain(): Promise<boolean> {
@@ -121,4 +127,7 @@ $: if (connectedAdress) {
 }
 $: connectBtnLabel = connectedAdress ? truncatedAdress : 'Connect';
 $: if (connectedAdress) { getConnectedAdressEthBalance(); }
+$: if (recipient) {
+  validRecipient = utils.isAddress(recipient);
+}
 </script>
