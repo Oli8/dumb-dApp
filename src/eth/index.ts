@@ -1,5 +1,6 @@
 // TODO: decorator if window.ethereum...
 // TODO: error management
+import { utils } from 'ethers';
 import type adress from '../types/adress';
 
 export async function connectWallet() {
@@ -23,6 +24,7 @@ export async function getConnectedWallet() {
       const accounts = await window.ethereum.request({
         method: 'eth_accounts'
       });
+
       return accounts[0];
     } catch (error) {
       return false;
@@ -40,7 +42,7 @@ export async function getEthBalance(account: adress) {
         params: [account]
       });
 
-      return window.Web3.utils.fromWei(balance);
+      return Number(utils.formatEther(balance));
     } catch (error) {
       return false;
     }
@@ -57,6 +59,33 @@ export async function getChain() {
       });
 
       return chainId;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+export async function sendTransaction({from, to, amount}: {
+  from: adress,
+  to: adress,
+  amount: number | string
+}) {
+  if ('ethereum' in window) {
+    try {
+      amount = utils.parseEther(String(amount))
+                    .toHexString()
+      const tx = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from,
+          to,
+          value: amount,
+        }]
+      });
+
+      return tx;
     } catch (error) {
       return false;
     }

@@ -18,6 +18,7 @@
 
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
+import { utils } from 'ethers';
 import { onMount } from 'svelte';
 import type adress from './types/adress';
 import { connectWallet, getConnectedWallet,
