@@ -65,35 +65,37 @@ const ropstenChainId: string = '0x3';
 const wrongChainMessage: string = 'This network is not supported. Please switch to Ropsten network';
 
 onMount(async () => {
-  window.ethereum.on('accountsChanged', ([account]) => {
-    if (!account) {
-      connectedAdress = null;
-    } else {
+  if (ethereumEnabled) {
+    window.ethereum.on('accountsChanged', ([account]) => {
+      if (!account) {
+        connectedAdress = null;
+      } else {
+        connect(account);
+      }
+    });
+
+    window.ethereum.on('chainChanged', async (chainId) => {
+      // TODO: check if we can ask for a network change
+      if (!await checkChain()) {
+        alert(wrongChainMessage);
+        logOut();
+      }
+    });
+
+    const account = await getConnectedWallet();
+    if (account) {
       connect(account);
     }
-  });
-
-  window.ethereum.on('chainChanged', async (chainId) => {
-    // TODO: check if we can ask for a network change
-    if (!await checkChain()) {
-      alert(wrongChainMessage);
-      logOut();
-    }
-  });
-
-  const account = await getConnectedWallet();
-  if (account) {
-    connect(account);
   }
 });
 
+const ethereumEnabled: boolean = 'ethereum' in window;
 let connectedAdress: adress;
 let truncatedAdress: string;
 let connectBtnLabel: string;
 let ethBalance: number;
 let readAbleEthBalance: string;
 let recipient: adress;
-// or init to true ?
 let validRecipient: boolean;
 let amount: number;
 let isAmountAvailable: boolean;
@@ -142,7 +144,7 @@ async function send() {
 
 async function getConnectedAdressEthBalance() {
   ethBalance = await getEthBalance(connectedAdress);
-  readAbleEthBalance = Number(ethBalance).toLocaleString('fullwide', {
+  readAbleEthBalance = ethBalance.toLocaleString('fullwide', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 5,
   });
@@ -151,7 +153,16 @@ async function getConnectedAdressEthBalance() {
 $: if (connectedAdress) {
   truncatedAdress = `${connectedAdress.substring(0, 4)}...${connectedAdress.substring(connectedAdress.length-4)}`;
 }
-$: connectBtnLabel = connectedAdress ? truncatedAdress : 'Connect';
+$: {
+  if (!ethereumEnabled) {
+    connectBtnLabel = 'Install MetaMask to connect'
+  }
+  else if (connectedAdress) {
+    connectBtnLabel = truncatedAdress;
+  } else {
+    connectBtnLabel = 'Connect';
+  }
+}
 $: if (connectedAdress) { getConnectedAdressEthBalance(); }
 $: if (recipient) { validRecipient = utils.isAddress(recipient); }
 $: if (amount !== undefined) { isAmountAvailable = amount < ethBalance; }
