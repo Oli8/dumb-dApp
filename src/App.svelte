@@ -127,19 +127,17 @@ function logOut() {
 }
 
 async function send() {
-  return modal.showModal();
   const tx = await sendTransaction({
     from: connectedAdress,
     to: recipient,
     amount,
   });
-  console.log(tx);
   if(tx) {
     txHash = tx;
-    return modal.showModal();
+    modal.showModal();
+    recipient = null;
+    amount = null;
   }
-  // TODO: display etherscan tx if tx is number
-  // refresh balance
 }
 
 async function getConnectedAdressEthBalance() {
