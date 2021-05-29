@@ -109,8 +109,8 @@ async function checkChain(): Promise<boolean> {
 }
 
 async function onConnect() {
-  if (!await checkChain())
-    return alert(wrongChainMessage);
+  if (!ethereumEnabled)
+    return;
 
   const account = await connectWallet();
   if (account) {
