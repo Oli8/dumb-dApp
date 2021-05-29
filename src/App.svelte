@@ -26,10 +26,16 @@
       {#if validRecipient === false}
         <span class="text-red-600">✗ Not a valid ethereum adress</span>
       {/if}
-      <input class="border block w-full my-3" type="number"
-             bind:value={amount} placeholder="Amount"/>
-      <input class="cursor-pointer w-full block uppercase text-lg p-3 rounded"
-             type="submit" value="Send" on:click|preventDefault={send}/>
+      <input class="border block w-full my-3" class:border-red-600={isAmountAvailable === false}
+             type="number" bind:value={amount} placeholder="Amount"/>
+      {#if isAmountAvailable === false}
+        <span class="text-red-600">✗ Unsufficient eth balance</span>
+      {/if}
+      <button class="w-full my-3 block bg-blue-100 uppercase text-lg p-3 rounded"
+              class:cursor-not-allowed={canSend} disabled={canSend}
+              on:click|preventDefault={send}>
+        Send
+      </button>
     </form>
   </main>
 {/if}
@@ -77,6 +83,8 @@ let recipient: adress;
 // or init to true ?
 let validRecipient: boolean;
 let amount: number;
+let isAmountAvailable: boolean;
+let canSend: boolean;
 
 async function checkChain(): Promise<boolean> {
   const chainId = await getChain();
@@ -127,7 +135,7 @@ $: if (connectedAdress) {
 }
 $: connectBtnLabel = connectedAdress ? truncatedAdress : 'Connect';
 $: if (connectedAdress) { getConnectedAdressEthBalance(); }
-$: if (recipient) {
-  validRecipient = utils.isAddress(recipient);
-}
+$: if (recipient) { validRecipient = utils.isAddress(recipient); }
+$: if (amount !== undefined) { isAmountAvailable = amount < ethBalance; }
+$: canSend = !validRecipient || !isAmountAvailable;
 </script>
