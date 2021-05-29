@@ -40,6 +40,19 @@
   </main>
 {/if}
 
+<dialog bind:this={modal} class="text-center px-10 text-lg">
+  <p class="text-blue-300">✓ Transaction submitted!</p>
+  <p>
+    <a class="underline"
+       href={`https://ropsten.etherscan.io/tx/${txHash}`}
+       target="_blank">Show in explorer ➚</a>
+  </p>
+  <button class="w-full my-3 block bg-blue-100 uppercase text-lg p-3 rounded mt-5"
+          on:click={() => modal.close()}>
+    Close
+  </button>
+</dialog>
+
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
 import { utils } from 'ethers';
@@ -85,6 +98,8 @@ let validRecipient: boolean;
 let amount: number;
 let isAmountAvailable: boolean;
 let canSend: boolean;
+let modal: HTMLDialogElement;
+let txHash: string;
 
 async function checkChain(): Promise<boolean> {
   const chainId = await getChain();
@@ -112,14 +127,19 @@ function logOut() {
 }
 
 async function send() {
-  console.log('send eths!!', amount, recipient);
+  return modal.showModal();
   const tx = await sendTransaction({
     from: connectedAdress,
     to: recipient,
     amount,
   });
   console.log(tx);
-  // TODO: display etherscan tx
+  if(tx) {
+    txHash = tx;
+    return modal.showModal();
+  }
+  // TODO: display etherscan tx if tx is number
+  // refresh balance
 }
 
 async function getConnectedAdressEthBalance() {
