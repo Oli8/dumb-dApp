@@ -2,7 +2,7 @@
 <nav class="border-b-2 border-blue-400 p-5">
   <h1 class="inline">Dumb dApp</h1>
   {#if connectedAdress}
-    <div class="float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1">
+    <div class="box bottom-1">
       {readAbleEthBalance}
       <img src="eth_logo.png"
            alt="ethers"
@@ -11,7 +11,7 @@
     </div>
   {/if}
   <button on:click={onConnect}
-          class="float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1 cursor-pointer">
+          class="box bottom-1 cursor-pointer">
     {connectBtnLabel}
   </button>
 </nav>
@@ -20,18 +20,18 @@
   <main class="border-2 border-blue-400 mt-20 w-4/6 mx-auto p-5">
     › Send Ethers
     <form>
-      <input class="border block w-full my-3" class:border-red-600={validRecipient === false}
+      <input class="b-input" class:border-red-600={validRecipient === false}
             type="text" maxlength="42"
              bind:value={recipient} placeholder="Recipient adress"/>
       {#if validRecipient === false}
         <span class="text-red-600">✗ Not a valid ethereum adress</span>
       {/if}
-      <input class="border block w-full my-3" class:border-red-600={isAmountAvailable === false}
+      <input class="b-input" class:border-red-600={isAmountAvailable === false}
              type="number" bind:value={amount} placeholder="Amount"/>
       {#if isAmountAvailable === false}
         <span class="text-red-600">✗ Unsufficient eth balance</span>
       {/if}
-      <button class="w-full my-3 block bg-blue-100 uppercase text-lg p-3 rounded"
+      <button class="b-button p-3 rounded"
               class:cursor-not-allowed={canSend} disabled={canSend}
               on:click|preventDefault={send}>
         Send
@@ -47,7 +47,7 @@
        href={`https://ropsten.etherscan.io/tx/${txHash}`}
        target="_blank">Show in explorer ➚</a>
   </p>
-  <button class="w-full my-3 block bg-blue-100 uppercase text-lg p-3 rounded mt-5"
+  <button class="b-button p-3 rounded mt-5"
           on:click={() => modal.close()}>
     Close
   </button>
@@ -171,3 +171,17 @@ $: if (recipient) { validRecipient = utils.isAddress(recipient); }
 $: if (amount !== undefined) { isAmountAvailable = amount < ethBalance; }
 $: canSend = !validRecipient || !isAmountAvailable;
 </script>
+
+<style lang="postcss">
+.box {
+  @apply float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1;
+}
+
+.b-input {
+  @apply border block w-full my-3 border block w-full my-3;
+}
+
+.b-button {
+  @apply w-full my-3 block bg-blue-100 uppercase text-lg p-3 rounded;
+}
+</style>
