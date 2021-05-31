@@ -1,4 +1,5 @@
 <Tailwind />
+<NotificationDisplay timeout={5000} />
 <nav class="border-b-2 border-blue-400 p-5">
   <h1 class="inline">Dumb dApp</h1>
   {#if connectedAdress}
@@ -55,6 +56,7 @@
 
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
+import { NotificationDisplay, notifier } from '@beyonk/svelte-notifications'
 import { utils } from 'ethers';
 import { onMount } from 'svelte';
 import type adress from './types/adress';
@@ -76,7 +78,7 @@ onMount(async () => {
     window.ethereum.on('chainChanged', async (chainId) => {
       // TODO: check if we can ask for a network change
       if (!await checkChain()) {
-        alert(wrongChainMessage);
+        notifier.warning(wrongChainMessage);
         logOut();
       }
     });
@@ -119,7 +121,7 @@ async function onConnect() {
 
 async function connect(account: adress) {
   if (!await checkChain())
-    return alert(wrongChainMessage);
+    return notifier.warning(wrongChainMessage);
   connectedAdress = account;
 }
 
