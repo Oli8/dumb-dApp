@@ -35,7 +35,7 @@ export async function getEthBalance(account: adress) {
 
     return Number(utils.formatEther(balance));
   } catch (error) {
-    return false;
+    return 0;
   }
 }
 
