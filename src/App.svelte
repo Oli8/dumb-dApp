@@ -57,13 +57,16 @@
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
 import { NotificationDisplay, notifier } from '@beyonk/svelte-notifications'
-import { utils } from 'ethers';
+import { utils, providers } from 'ethers';
+import type { Transaction } from 'ethers';
 import { onMount } from 'svelte';
 import type adress from './types/adress';
 import * as eth from './eth';
 
 const ropstenChainId: string = '0x3';
 const wrongChainMessage: string = 'This network is not supported. Please switch to Ropsten network';
+const provider = new providers.Web3Provider(window.ethereum);
+//TODO: event to react to balance change
 
 onMount(async () => {
   if (ethereumEnabled) {
@@ -140,9 +143,8 @@ async function send() {
     modal.showModal();
     recipient = null;
     amount = null;
-    provider.once(txHash, (transaction) => {
-      console.log(transaction);
-      alert(txHash + ' is done !');
+    provider.once(txHash, (_transaction: Transaction) => {
+      notifier.success('Transaction confirmed!');
     });
   }
 }
