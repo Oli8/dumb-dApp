@@ -58,8 +58,7 @@ import Tailwind from './Tailwind.svelte';
 import { utils } from 'ethers';
 import { onMount } from 'svelte';
 import type adress from './types/adress';
-import { connectWallet, getConnectedWallet,
-         getEthBalance, getChain, sendTransaction } from './eth';
+import * as eth from './eth';
 
 const ropstenChainId: string = '0x3';
 const wrongChainMessage: string = 'This network is not supported. Please switch to Ropsten network';
@@ -82,7 +81,7 @@ onMount(async () => {
       }
     });
 
-    const account = await getConnectedWallet();
+    const account = await eth.getConnectedWallet();
     if (account) {
       connect(account);
     }
@@ -104,7 +103,7 @@ let modal: HTMLDialogElement;
 let txHash: string;
 
 async function checkChain(): Promise<boolean> {
-  const chainId = await getChain();
+  const chainId = await eth.getChain();
   return chainId === ropstenChainId;
 }
 
@@ -112,7 +111,7 @@ async function onConnect() {
   if (!ethereumEnabled)
     return;
 
-  const account = await connectWallet();
+  const account = await eth.connectWallet();
   if (account) {
     connect(account);
   }
@@ -129,7 +128,7 @@ function logOut() {
 }
 
 async function send() {
-  const tx = await sendTransaction({
+  const tx = await eth.sendTransaction({
     from: connectedAdress,
     to: recipient,
     amount,
@@ -139,11 +138,15 @@ async function send() {
     modal.showModal();
     recipient = null;
     amount = null;
+    provider.once(txHash, (transaction) => {
+      console.log(transaction);
+      alert(txHash + ' is done !');
+    });
   }
 }
 
 async function getConnectedAdressEthBalance() {
-  ethBalance = await getEthBalance(connectedAdress);
+  ethBalance = await eth.getEthBalance(connectedAdress);
   readAbleEthBalance = ethBalance.toLocaleString('fullwide', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 5,
