@@ -65,11 +65,13 @@ import * as eth from './eth';
 
 const ropstenChainId: string = '0x3';
 const wrongChainMessage: string = 'This network is not supported. Please switch to Ropsten network';
-const provider = new providers.Web3Provider(window.ethereum);
+let provider: providers.Web3Provider;
 //TODO: event to react to balance change
 
 onMount(async () => {
   if (ethereumEnabled) {
+    provider = new providers.Web3Provider(window.ethereum);
+
     window.ethereum.on('accountsChanged', ([account]) => {
       if (!account) {
         connectedAdress = null;
