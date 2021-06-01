@@ -18,27 +18,8 @@
 </nav>
 
 {#if connectedAdress}
-  <main class="border-2 border-blue-400 mt-20 w-4/6 mx-auto p-5">
-    › Send Ethers
-    <form>
-      <input class="b-input" class:border-red-600={validRecipient === false}
-            type="text" maxlength="42"
-             bind:value={recipient} placeholder="Recipient adress"/>
-      {#if validRecipient === false}
-        <span class="text-red-600">✗ Not a valid ethereum adress</span>
-      {/if}
-      <input class="b-input" class:border-red-600={isAmountAvailable === false}
-             type="number" bind:value={amount} placeholder="Amount"/>
-      {#if isAmountAvailable === false}
-        <span class="text-red-600">✗ Unsufficient eth balance</span>
-      {/if}
-      <button class="b-button p-3 rounded"
-              class:cursor-not-allowed={canSend} disabled={canSend}
-              on:click|preventDefault={send}>
-        Send
-      </button>
-    </form>
-  </main>
+  <SendingForm {connectedAdress} {ethBalance} {provider}
+               on:txSubmit={onTxSubmit} />
 {/if}
 
 <dialog bind:this={modal} class="text-center px-10 text-lg">
@@ -56,12 +37,12 @@
 
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
-import { NotificationDisplay, notifier } from '@beyonk/svelte-notifications'
+import { NotificationDisplay, notifier } from '@beyonk/svelte-notifications';
 import { utils, providers } from 'ethers';
-import type { Transaction } from 'ethers';
 import { onMount } from 'svelte';
 import type adress from './types/adress';
 import * as eth from './eth';
+import SendingForm from './components/SendingForm.svelte';
 
 const ropstenChainId: string = '0x3';
 const wrongChainMessage: string = 'This network is not supported. Please switch to Ropsten network';
@@ -101,11 +82,6 @@ let truncatedAdress: string;
 let connectBtnLabel: string;
 let ethBalance: number;
 let readAbleEthBalance: string;
-let recipient: adress;
-let validRecipient: boolean;
-let amount: number;
-let isAmountAvailable: boolean;
-let canSend: boolean;
 let modal: HTMLDialogElement;
 let txHash: string;
 
@@ -134,21 +110,9 @@ function logOut() {
   connectedAdress = null;
 }
 
-async function send() {
-  const tx = await eth.sendTransaction({
-    from: connectedAdress,
-    to: recipient,
-    amount,
-  });
-  if(tx) {
-    txHash = tx;
-    modal.showModal();
-    recipient = null;
-    amount = null;
-    provider.once(txHash, (_transaction: Transaction) => {
-      notifier.success('Transaction confirmed!');
-    });
-  }
+function onTxSubmit({ detail }) {
+  txHash = detail.hash;
+  modal.showModal();
 }
 
 async function getConnectedAdressEthBalance() {
@@ -173,21 +137,4 @@ $: {
   }
 }
 $: if (connectedAdress) { getConnectedAdressEthBalance(); }
-$: if (recipient) { validRecipient = utils.isAddress(recipient); }
-$: if (amount !== undefined) { isAmountAvailable = amount < ethBalance; }
-$: canSend = !validRecipient || !isAmountAvailable;
 </script>
-
-<style lang="postcss">
-.box {
-  @apply float-right mr-4 border-dotted border-2 border-blue-400 rounded p-1 relative bottom-1;
-}
-
-.b-input {
-  @apply border block w-full my-3 border block w-full my-3;
-}
-
-.b-button {
-  @apply w-full my-3 block bg-blue-100 uppercase text-lg p-3 rounded;
-}
-</style>
