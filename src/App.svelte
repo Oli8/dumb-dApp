@@ -22,18 +22,8 @@
                on:txSubmit={onTxSubmit} />
 {/if}
 
-<dialog bind:this={modal} class="text-center px-10 text-lg">
-  <p class="text-blue-300">✓ Transaction submitted!</p>
-  <p>
-    <a class="underline"
-       href={`https://ropsten.etherscan.io/tx/${txHash}`}
-       target="_blank">Show in explorer ➚</a>
-  </p>
-  <button class="b-button p-3 rounded mt-5"
-          on:click={() => modal.close()}>
-    Close
-  </button>
-</dialog>
+<TxSubmittedModal bind:show={showSubmittedModal}
+                  {txHash} />
 
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
@@ -43,6 +33,7 @@ import { onMount } from 'svelte';
 import type adress from './types/adress';
 import * as eth from './eth';
 import SendingForm from './components/SendingForm.svelte';
+import TxSubmittedModal from './components/TxSubmittedModal.svelte';
 
 const ropstenChainId: string = '0x3';
 const wrongChainMessage: string = 'This network is not supported. Please switch to Ropsten network';
@@ -82,7 +73,7 @@ let truncatedAdress: string;
 let connectBtnLabel: string;
 let ethBalance: number;
 let readAbleEthBalance: string;
-let modal: HTMLDialogElement;
+let showSubmittedModal: boolean = false;
 let txHash: string;
 
 async function checkChain(): Promise<boolean> {
@@ -112,7 +103,7 @@ function logOut() {
 
 function onTxSubmit({ detail }) {
   txHash = detail.hash;
-  modal.showModal();
+  showSubmittedModal = true;
 }
 
 async function getConnectedAdressEthBalance() {
