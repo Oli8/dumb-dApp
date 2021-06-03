@@ -38,7 +38,7 @@
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
 import { NotificationDisplay, notifier } from '@beyonk/svelte-notifications';
-import { utils, providers } from 'ethers';
+import { providers } from 'ethers';
 import { onMount } from 'svelte';
 import type adress from './types/adress';
 import * as eth from './eth';
