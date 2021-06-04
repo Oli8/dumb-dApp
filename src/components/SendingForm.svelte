@@ -41,11 +41,14 @@ let canSend: boolean;
 const dispatch = createEventDispatcher();
 
 async function send() {
+  dispatch('txPending');
   const txHash = await sendTransaction({
     from: connectedAdress,
     to: recipient,
     amount,
   });
+  dispatch('txWalletAction');
+
   if(txHash) {
     dispatch('txSubmit', { hash: txHash });
     recipient = null;

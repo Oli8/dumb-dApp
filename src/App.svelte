@@ -19,11 +19,14 @@
 
 {#if connectedAdress}
   <SendingForm {connectedAdress} {ethBalance} {provider}
-               on:txSubmit={onTxSubmit} />
+               on:txSubmit={onTxSubmit}
+               on:txPending={setTxPending(true)}
+               on:txWalletAction={setTxPending(false)} />
 {/if}
 
 <TxSubmittedModal bind:show={showSubmittedModal}
                   {txHash} />
+<LoaderModal show={txPending} />
 
 <script lang="ts">
 import Tailwind from './Tailwind.svelte';
@@ -34,6 +37,7 @@ import type adress from './types/adress';
 import * as eth from './eth';
 import SendingForm from './components/SendingForm.svelte';
 import TxSubmittedModal from './components/TxSubmittedModal.svelte';
+import LoaderModal from './components/LoaderModal.svelte';
 
 const ropstenChainId: string = '0x3';
 const wrongChainMessage: string = 'This network is not supported. Please switch to Ropsten network';
@@ -73,8 +77,9 @@ let truncatedAdress: string;
 let connectBtnLabel: string;
 let ethBalance: number;
 let readAbleEthBalance: string;
-let showSubmittedModal: boolean = false;
 let txHash: string;
+let showSubmittedModal: boolean = false;
+let txPending: boolean = false;
 
 async function checkChain(): Promise<boolean> {
   const chainId = await eth.getChain();
@@ -104,6 +109,10 @@ function logOut() {
 function onTxSubmit({ detail }) {
   txHash = detail.hash;
   showSubmittedModal = true;
+}
+// Returns function to be used simplier as event callback
+function setTxPending(val: boolean) {
+  return () => txPending = val;
 }
 
 async function getConnectedAdressEthBalance() {
