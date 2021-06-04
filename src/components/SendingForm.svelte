@@ -13,7 +13,7 @@
       <span class="text-red-600">✗ Unsufficient eth balance</span>
     {/if}
     <button class="b-button p-3 rounded"
-            class:cursor-not-allowed={canSend} disabled={canSend}
+            class:cursor-not-allowed={!canSend} disabled={!canSend}
             on:click|preventDefault={send}>
       Send
     </button>
@@ -58,8 +58,8 @@ async function send() {
     });
   }
 }
-
+// FIXME: if clauses cause those check to not be fired when set back to null
 $: if (recipient) { validRecipient = utils.isAddress(recipient); }
 $: if (amount !== undefined) { isAmountAvailable = amount < ethBalance; }
-$: canSend = !validRecipient || !isAmountAvailable;
+$: canSend = validRecipient && isAmountAvailable;
 </script>
