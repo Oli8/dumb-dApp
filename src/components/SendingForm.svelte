@@ -1,15 +1,15 @@
 <main class="border-2 border-blue-400 mt-20 w-4/6 mx-auto p-5">
   › Send Ethers
   <form>
-    <input class="b-input" class:border-red-600={validRecipient === false}
+    <input class="b-input" class:border-red-600={recipient && !validRecipient}
           type="text" maxlength="42"
            bind:value={recipient} placeholder="Recipient adress"/>
-    {#if validRecipient === false}
+    {#if recipient && !validRecipient}
       <span class="text-red-600">✗ Not a valid ethereum adress</span>
     {/if}
-    <input class="b-input" class:border-red-600={isAmountAvailable === false}
+    <input class="b-input" class:border-red-600={amount && !isAmountAvailable}
            type="number" bind:value={amount} placeholder="Amount"/>
-    {#if isAmountAvailable === false}
+    {#if amount && !isAmountAvailable}
       <span class="text-red-600">✗ Unsufficient eth balance</span>
     {/if}
     <button class="b-button p-3 rounded"
@@ -33,8 +33,8 @@ export let ethBalance: number = 0;
 export let provider: providers.Web3Provider;
 
 let recipient: adress;
-let validRecipient: boolean;
-let amount: number;
+let validRecipient: boolean = null;
+let amount: number = null;
 let isAmountAvailable: boolean;
 let canSend: boolean;
 
@@ -58,8 +58,8 @@ async function send() {
     });
   }
 }
-// FIXME: if clauses cause those check to not be fired when set back to null
-$: if (recipient) { validRecipient = utils.isAddress(recipient); }
-$: if (amount !== undefined) { isAmountAvailable = amount < ethBalance; }
+
+$: validRecipient = utils.isAddress(recipient);
+$: isAmountAvailable = amount !== null && amount < ethBalance;
 $: canSend = validRecipient && isAmountAvailable;
 </script>

@@ -99,6 +99,7 @@ async function onConnect() {
 async function connect(account: adress) {
   if (!await checkChain())
     return notifier.warning(wrongChainMessage);
+
   connectedAdress = account;
 }
 
