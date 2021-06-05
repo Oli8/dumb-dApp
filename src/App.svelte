@@ -57,7 +57,6 @@ onMount(async () => {
     });
 
     window.ethereum.on('chainChanged', async (chainId) => {
-      // TODO: check if we can ask for a network change
       if (!await checkChain()) {
         notifier.warning(wrongChainMessage);
         logOut();
